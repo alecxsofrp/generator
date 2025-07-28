@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced Post Generator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-size: 2.5em;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: #666;
+            font-size: 1.1em;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .input-section, .output-section {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 15px;
+            border: 2px solid #e9ecef;
+        }
+
+        .section-title {
+            font-size: 1.3em;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #495057;
+        }
+
+        .input-area {
+            width: 100%;
+            height: 200px;
+            padding: 15px;
+            border: 2px solid #dee2e6;
+            border-radius: 10px;
+            font-size: 16px;
+            font-family: inherit;
+            resize: vertical;
+            transition: border-color 0.3s;
+            line-height: 1.5;
+        }
+
+        .input-area:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .controls {
+            margin: 20px 0;
+        }
+
+        .control-group {
+            margin-bottom: 20px;
+            padding: 15px;
+            background: white;
+            border-radius: 10px;
+            border: 1px solid #e9ecef;
+        }
+
+        .control-label {
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #495057;
+            display: block;
+        }
+
+        .font-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .font-option {
+            padding: 8px;
+            border: 2px solid #dee2e6;
+            border-radius: 8px;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.3s;
+            background: white;
+            font-size: 14px;
+        }
+
+        .font-option:hover {
+            border-color: #667eea;
+            background: #f8f9ff;
+        }
+
+        .font-option.selected {
+            border-color: #667eea;
+            background: #667eea;
+            color: white;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin: 15px 0;
+        }
+
+        .btn {
+            padding: 10px 16px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: bold;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #218838;
+        }
+
+        .btn-warning {
+            background: #ffc107;
+            color: #212529;
+        }
+
+        .btn-warning:hover {
+            background: #e0a800;
+        }
+
+        .output-area {
+            width: 100%;
+            height: 200px;
+            padding: 15px;
+            border: 2px solid #dee2e6;
+            border-radius: 10px;
+            font-size: 16px;
+            font-family: monospace;
+            background: #f8f9fa;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            line-height: 1.5;
+        }
+
+        .color-picker {
+            width: 50px;
+            height: 35px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin: 10px 0;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+        }
+
+        .color-palette {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .saved-color {
+            width: 35px;
+            height: 35px;
+            border-radius: 8px;
+            cursor: pointer;
+            border: 2px solid #dee2e6;
+            transition: all 0.3s;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .saved-color:hover {
+            border-color: #667eea;
+            transform: scale(1.1);
+        }
+
+        .saved-color.selected {
+            border-color: #667eea;
+            border-width: 3px;
+        }
+
+        .delete-color {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: #dc3545;
+            color: white;
+            border: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            font-size: 10px;
+            cursor: pointer;
+            display: none;
+        }
+
+        .saved-color:hover .delete-color {
+            display: block;
+        }
+
+        .no-colors-message {
+            color: #6c757d;
+            font-style: italic;
+            font-size: 14px;
+        }
+
+        .copy-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .output-container {
+            position: relative;
+        }
+
+        .instructions {
+            background: #e3f2fd;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border-left: 4px solid #2196f3;
+        }
+
+        .instructions h4 {
+            color: #1976d2;
+            margin-bottom: 8px;
+        }
+
+        .instructions ul {
+            margin-left: 20px;
+            color: #555;
+        }
+
+        .instructions li {
+            margin-bottom: 5px;
+        }
+
+        .preview-area {
+            background: white;
+            border: 2px solid #dee2e6;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 15px 0;
+            min-height: 100px;
+            line-height: 1.6;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .action-buttons {
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Advanced Post Generator</h1>
+            <p>Select text, apply fonts, spacing, and colors - just like SpaceGen!</p>
+        </div>
+
+        <div class="instructions">
+            <h4>How to Use:</h4>
+            <ul>
+                <li><strong>Step 1:</strong> Type your text in the input box</li>
+                <li><strong>Step 2:</strong> Select/highlight the words you want to transform</li>
+                <li><strong>Step 3:</strong> Choose a font style and click "Apply Font to Selection"</li>
+                <li><strong>Step 4:</strong> Use spacing buttons to add character spacing to ALL text</li>
+                <li><strong>Step 5:</strong> Apply colors and copy your result!</li>
+            </ul>
+        </div>
+
+        <div class="main-content">
+            <div class="input-section">
+                <div class="section-title">Input Text</div>
+                <textarea id="inputText" class="input-area" placeholder="Type your text here, then select words to transform..."></textarea>
+                
+                <div class="controls">
+                    <div class="control-group">
+                        <label class="control-label">Font Style</label>
+                        <div class="font-grid" id="fontOptions">
+                            <div class="font-option selected" data-font="regular">Regular</div>
+                            <div class="font-option" data-font="bold">𝐁𝐨𝐥𝐝</div>
+                            <div class="font-option" data-font="italic">𝐼𝑡𝑎𝑙𝑖𝑐</div>
+                            <div class="font-option" data-font="script">𝒮𝒸𝓇𝒾𝓅𝓉</div>
+                            <div class="font-option" data-font="boldscript">𝓑𝓸𝓵𝓭 𝓢𝓬𝓻𝓲𝓹𝓽</div>
+                            <div class="font-option" data-font="doublestruck">𝔻𝕠𝕦𝕓𝕝𝕖</div>
+                            <div class="font-option" data-font="fraktur">𝔉𝔯𝔞𝔨𝔱𝔲𝔯</div>
+                            <div class="font-option" data-font="monospace">𝙼𝚘𝚗𝚘𝚜𝚙𝚊𝚌𝚎</div>
+                            <div class="font-option" data-font="sans">𝖲𝖺𝗇𝗌</div>
+                            <div class="font-option" data-font="boldsans">𝗕𝗼𝗹𝗱 𝗦𝗮𝗻𝘀</div>
+                            <div class="font-option" data-font="wide">Ｗｉｄｅ</div>
+                            <div class="font-option" data-font="smallcaps">ꜱᴍᴀʟʟ ᴄᴀᴘꜱ</div>
+                        </div>
+                        
+                        <div class="action-buttons">
+                            <button class="btn btn-primary" onclick="applyFontToSelection()">Apply Font to Selection</button>
+                            <button class="btn btn-secondary" onclick="resetText()">Reset Text</button>
+                        </div>
+                    </div>
+
+                    <div class="control-group">
+                        <label class="control-label">Spacing (Applied to All Text)</label>
+                        <div class="action-buttons">
+                            <button class="btn btn-warning" onclick="applySpacing('double')">Double Space</button>
+                            <button class="btn btn-warning" onclick="applySpacing('triple')">Triple Space</button>
+                            <button class="btn btn-secondary" onclick="applySpacing('normal')">Normal Space</button>
+                        </div>
+                    </div>
+
+                    <div class="control-group">
+                        <label class="control-label">Text Color</label>
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="useColor">
+                            <label for="useColor">Apply Color</label>
+                            <input type="color" id="textColor" class="color-picker" value="#667eea">
+                            <button class="btn btn-secondary" onclick="saveColor()" style="margin-left: 10px; padding: 8px 12px;">Save Color</button>
+                        </div>
+                        
+                        <div class="saved-colors" id="savedColors" style="margin-top: 15px;">
+                            <div style="font-weight: bold; margin-bottom: 10px; color: #495057;">Saved Colors:</div>
+                            <div class="color-palette" id="colorPalette">
+                                <!-- Saved colors will appear here -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="control-group">
+                        <div class="action-buttons">
+                            <button class="btn btn-success" onclick="generateFinalOutput()">Generate Final Output</button>
+                            <button class="btn btn-secondary" onclick="clearAll()">Clear All</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="output-section">
+                <div class="section-title">Live Preview</div>
+                <div class="preview-area" id="previewArea">Your formatted text will appear here as you work...</div>
+                
+                <div style="margin-top: 20px;">
+                    <div class="section-title">Copy-Ready Output</div>
+                    <div class="output-container">
+                        <textarea id="outputText" class="output-area" readonly placeholder="Click 'Generate Final Output' to see your finished text here..."></textarea>
+                        <button class="copy-btn" onclick="copyToClipboard()">Copy</button>
+                    </div>
+                </div>
+                
+                <div style="margin-top: 15px;">
+                    <div class="section-title">HTML Output (with colors)</div>
+                    <div class="output-container">
+                        <textarea id="htmlOutput" class="output-area" readonly placeholder="HTML version will appear here..."></textarea>
+                        <button class="copy-btn" onclick="copyHtmlToClipboard()">Copy HTML</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let selectedFont = 'regular';
+        let savedColors = [];
+        let currentText = '';
+
+        // Font mapping objects
+        const fontMaps = {
+            regular: 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ',
+            bold: {
+                'a': '𝐚', 'b': '𝐛', 'c': '𝐜', 'd': '𝐝', 'e': '𝐞', 'f': '𝐟', 'g': '𝐠', 'h': '𝐡', 'i': '𝐢', 'j': '𝐣', 'k': '𝐤', 'l': '𝐥', 'm': '𝐦', 'n': '𝐧', 'o': '𝐨', 'p': '𝐩', 'q': '𝐪', 'r': '𝐫', 's': '𝐬', 't': '𝐭', 'u': '𝐮', 'v': '𝐯', 'w': '𝐰', 'x': '𝐱', 'y': '𝐲', 'z': '𝐳',
+                'A': '𝐀', 'B': '𝐁', 'C': '𝐂', 'D': '𝐃', 'E': '𝐄', 'F': '𝐅', 'G': '𝐆', 'H': '𝐇', 'I': '𝐈', 'J': '𝐉', 'K': '𝐊', 'L': '𝐋', 'M': '𝐌', 'N': '𝐍', 'O': '𝐎', 'P': '𝐏', 'Q': '𝐐', 'R': '𝐑', 'S': '𝐒', 'T': '𝐓', 'U': '𝐔', 'V': '𝐕', 'W': '𝐖', 'X': '𝐗', 'Y': '𝐘', 'Z': '𝐙'
+            },
+            italic: 'abcdefghijklmnopqrstuvwxyz𝑎𝑏𝑐𝑑𝑒𝑓𝑔ℎ𝑖𝑗𝑘𝑙𝑚𝑛𝑜𝑝𝑞𝑟𝑠𝑡𝑢𝑣𝑤𝑥𝑦𝑧ABCDEFGHIJKLMNOPQRSTUVWXYZ𝐴𝐵𝐶𝐷𝐸𝐹𝐺𝐻𝐼𝐽𝐾𝐿𝑀𝑁𝑂𝑃𝑄𝑅𝑆𝑇𝑈𝑉𝑊𝑋𝑌𝑍',
+            script: 'abcdefghijklmnopqrstuvwxyz𝒶𝒷𝒸𝒹ℯ𝒻ℊ𝒽𝒾𝒿𝓀𝓁𝓂𝓃ℴ𝓅𝓆𝓇𝓈𝓉𝓊𝓋𝓌𝓍𝓎𝓏ABCDEFGHIJKLMNOPQRSTUVWXYZ𝒜ℬ𝒞𝒟ℰℱ𝒢ℋℐ𝒥𝒦ℒℳ𝒩ℴ𝒫𝒬ℛ𝒮𝒯𝒰𝒱𝒲𝒳𝒴𝒵',
+            boldscript: 'abcdefghijklmnopqrstuvwxyz𝓪𝓫𝓬𝓭𝓮𝓯𝓰𝓱𝓲𝓳𝓴𝓵𝓶𝓷𝓸𝓹𝓺𝓻𝓼𝓽𝓾𝓿𝔀𝔁𝔂𝔃ABCDEFGHIJKLMNOPQRSTUVWXYZ𝓐𝓑𝓒𝓓𝓔𝓕𝓖𝓗𝓘𝓙𝓚𝓛𝓜𝓝𝓞𝓟𝓠𝓡𝓢𝓣𝓤𝓥𝓦𝓧𝓨𝓩',
+            doublestruck: 'abcdefghijklmnopqrstuvwxyz𝕒𝕓𝕔𝕕𝖊𝖋𝖌𝖍𝖎𝖏𝖐𝖑𝖒𝖓𝖔𝖕𝖖𝖗𝖘𝖙𝖚𝖛𝖜𝖝𝖞𝖟ABCDEFGHIJKLMNOPQRSTUVWXYZ𝔸𝔹ℂ𝔻𝔼𝔽𝔾ℍ𝕀𝕁𝕂𝕃𝕄ℕ𝕆ℙℚℝ𝕊𝕋𝕌𝕍𝕎𝕏𝕐ℤ',
+            fraktur: 'abcdefghijklmnopqrstuvwxyz𝔞𝔟𝔠𝔡𝔢𝔣𝔤𝔥𝔦𝔧𝔨𝔩𝔪𝔫𝔬𝔭𝔮𝔯𝔰𝔱𝔲𝔳𝔴𝔵𝔶𝔷ABCDEFGHIJKLMNOPQRSTUVWXYZ𝔄𝔅ℭ𝔇𝔈𝔉𝔊ℌℑ𝔍𝔎𝔏𝔐𝔑𝔒𝔓𝔔ℜ𝔖𝔗𝔘𝔙𝔚𝔛𝔜ℨ',
+            monospace: 'abcdefghijklmnopqrstuvwxyz𝚊𝚋𝚌𝚍𝚎𝚏𝚐𝚑𝚒𝚓𝚔𝚕𝚖𝚗𝚘𝚙𝚚𝚛𝚜𝚝𝚞𝚟𝚠𝚡𝚢𝚣ABCDEFGHIJKLMNOPQRSTUVWXYZ𝙰𝙱𝙲𝙳𝙴𝙵𝙶𝙷𝙸𝙹𝙺𝙻𝙼𝙽𝙾𝙿𝚀𝚁𝚂𝚃𝚄𝚅𝚆𝚇𝚈𝚉',
+            sans: 'abcdefghijklmnopqrstuvwxyz𝖺𝖻𝖼𝖽𝖾𝖿𝗀𝗁𝗂𝗃𝗄𝗅𝗆𝗇𝗈𝗉𝗊𝗋𝗌𝗍𝗎𝗏𝗐𝗑𝗒𝗓ABCDEFGHIJKLMNOPQRSTUVWXYZ𝖠𝖡𝖢𝖣𝖤𝖥𝖦𝖧𝖨𝖩𝖪𝖫𝖬𝖭𝖮𝖯𝖰𝖱𝖲𝖳𝖴𝖵𝖶𝖷𝖸𝖹',
+            boldsans: 'abcdefghijklmnopqrstuvwxyz𝗮𝗯𝗰𝗱𝗲𝗳𝗴𝗵𝗶𝗷𝗸𝗹𝗺𝗻𝗼𝗽𝗾𝗿𝘀𝘁𝘂𝘃𝘄𝘅𝘆𝘇ABCDEFGHIJKLMNOPQRSTUVWXYZ𝗔𝗕𝗖𝗗𝗘𝗙𝗚𝗛𝗜𝗝𝗞𝗟𝗠𝗡𝗢𝗣𝗤𝗥𝗦𝗧𝗨𝗩𝗪𝗫𝗬𝗭',
+            wide: 'abcdefghijklmnopqrstuvwxyzａｂｃｄｅｆｇｈｉｊｋｌｍｎｏｐｑｒｓｔｕｖｗｘｙｚABCDEFGHIJKLMNOPQRSTUVWXYZＡＢＣＤＥＦＧＨＩＪＫＬＭＮＯＰＱＲＳＴＵＶＷＸＹＺ',
+            smallcaps: 'abcdefghijklmnopqrstuvwxyzᴀʙᴄᴅᴇꜰɢʜɪᴊᴋʟᴍɴᴏᴘǫʀꜱᴛᴜᴠᴡxʏᴢABCDEFGHIJKLMNOPQRSTUVWXYZᴀʙᴄᴅᴇꜰɢʜɪᴊᴋʟᴍɴᴏᴘǫʀꜱᴛᴜᴠᴡxʏᴢ'
+        };
+
+        // Load saved colors from memory on page load
+        function loadSavedColors() {
+            const defaultColors = ['#667eea', '#764ba2', '#ff6b6b', '#4ecdc4', '#45b7d1', '#96ceb4', '#ffeaa7', '#dda0dd'];
+            savedColors = defaultColors;
+            updateColorPalette();
+        }
+
+        function saveColor() {
+            const colorInput = document.getElementById('textColor');
+            const newColor = colorInput.value;
+            
+            if (!savedColors.includes(newColor)) {
+                savedColors.push(newColor);
+                updateColorPalette();
+            }
+        }
+
+        function updateColorPalette() {
+            const palette = document.getElementById('colorPalette');
+            
+            if (savedColors.length === 0) {
+                palette.innerHTML = '<div class="no-colors-message">No saved colors yet. Use the color picker and click "Save Color" to add some!</div>';
+                return;
+            }
+            
+            palette.innerHTML = savedColors.map((color, index) => `
+                <div class="saved-color" style="background-color: ${color}" 
+                     onclick="selectSavedColor('${color}')" 
+                     title="Click to use this color">
+                    <button class="delete-color" onclick="deleteSavedColor(${index})" title="Delete color">×</button>
+                </div>
+            `).join('');
+        }
+
+        function selectSavedColor(color) {
+            document.getElementById('textColor').value = color;
+            document.getElementById('useColor').checked = true;
+            
+            // Update visual selection
+            document.querySelectorAll('.saved-color').forEach(el => el.classList.remove('selected'));
+            event.currentTarget.classList.add('selected');
+        }
+
+        function deleteSavedColor(index) {
+            event.stopPropagation();
+            savedColors.splice(index, 1);
+            updateColorPalette();
+        }
+
+        // Initialize font selection
+        document.querySelectorAll('.font-option').forEach(option => {
+            option.addEventListener('click', function() {
+                document.querySelectorAll('.font-option').forEach(opt => opt.classList.remove('selected'));
+                this.classList.add('selected');
+                selectedFont = this.dataset.font;
+            });
+        });
+
+        function convertToFont(text, font) {
+            if (font === 'regular') return text;
+            
+            if (font === 'bold') {
+                return text.split('').map(char => {
+                    return fontMaps.bold[char] || char;
+                }).join('');
+            }
+            
+            if (fontMaps[font] && typeof fontMaps[font] === 'string') {
+                const normal = fontMaps.regular;
+                const special = fontMaps[font];
+                const normalChars = normal.substring(0, 26) + normal.substring(26, 52);
+                const specialChars = special.substring(26, 52) + special.substring(78, 104);
+                
+                return text.split('').map(char => {
+                    const index = normalChars.indexOf(char);
+                    if (index !== -1) {
+                        return specialChars[index];
+                    }
+                    return char;
+                }).join('');
+            }
+            
+            return text;
+        }
+
+        function applyFontToSelection() {
+            const textarea = document.getElementById('inputText');
+            const start = textarea.selectionStart;
+            const end = textarea.selectionEnd;
+            const selectedText = textarea.value.substring(start, end);
+            
+            if (selectedText.length === 0) {
+                alert('Please select some text first!');
+                return;
+            }
+            
+            const convertedText = convertToFont(selectedText, selectedFont);
+            const beforeText = textarea.value.substring(0, start);
+            const afterText = textarea.value.substring(end);
+            
+            // Update the textarea with the new text
+            textarea.value = beforeText + convertedText + afterText;
+            
+            // Update the preview
+            updatePreview();
+            
+            // Set cursor position after the converted text
+            const newPosition = start + convertedText.length;
+            textarea.setSelectionRange(newPosition, newPosition);
+            textarea.focus();
+        }
+
+        function resetText() {
+            document.getElementById('inputText').value = '';
+            updatePreview();
+        }
+
+        function applySpacing(type) {
+            const textarea = document.getElementById('inputText');
+            let text = textarea.value;
+            
+            switch(type) {
+                case 'double':
+                    text = text.split('').join(' ');
+                    break;
+                case 'triple':
+                    text = text.split('').join('  ');
+                    break;
+                case 'normal':
+                default:
+                    // Remove extra spaces between characters (keep only single spaces between words)
+                    text = text.replace(/(.)\s+(.)/g, (match, char1, char2) => {
+                        // If both characters are letters/numbers, keep single space
+                        if (/\w/.test(char1) && /\w/.test(char2)) {
+                            return char1 + ' ' + char2;
+                        }
+                        // Otherwise keep original
+                        return match;
+                    });
+                    break;
+            }
+            
+            textarea.value = text;
+            updatePreview();
+        }
+
+        function updatePreview() {
+            const text = document.getElementById('inputText').value;
+            const previewArea = document.getElementById('previewArea');
+            
+            if (text.trim() === '') {
+                previewArea.textContent = 'Your formatted text will appear here as you work...';
+                previewArea.style.color = '#999';
+                return;
+            }
+            
+            previewArea.textContent = text;
+            previewArea.style.color = '#333';
+        }
+
+        function generateFinalOutput() {
+            const inputText = document.getElementById('inputText').value;
+            
+            if (!inputText.trim()) {
+                alert('Please enter some text first!');
+                return;
+            }
+            
+            // Set plain text output
+            document.getElementById('outputText').value = inputText;
+            
+            // Generate HTML output with color if enabled
+            const useColor = document.getElementById('useColor').checked;
+            const color = document.getElementById('textColor').value;
+            
+            let htmlOutput = inputText;
+            if (useColor) {
+                htmlOutput = `<span style="color: ${color}">${inputText}</span>`;
+            }
+            
+            document.getElementById('htmlOutput').value = htmlOutput;
+        }
+
+        function copyToClipboard() {
+            const outputText = document.getElementById('outputText');
+            outputText.select();
+            document.execCommand('copy');
+            
+            const btn = event.target;
+            const originalText = btn.textContent;
+            btn.textContent = 'Copied!';
+            btn.style.background = '#218838';
+            
+            setTimeout(() => {
+                btn.textContent = originalText;
+                btn.style.background = '#28a745';
+            }, 2000);
+        }
+
+        function copyHtmlToClipboard() {
+            const htmlOutput = document.getElementById('htmlOutput');
+            htmlOutput.select();
+            document.execCommand('copy');
+            
+            const btn = event.target;
+            const originalText = btn.textContent;
+            btn.textContent = 'Copied!';
+            btn.style.background = '#218838';
+            
+            setTimeout(() => {
+                btn.textContent = originalText;
+                btn.style.background = '#28a745';
+            }, 2000);
+        }
+
+        function clearAll() {
+            document.getElementById('inputText').value = '';
+            document.getElementById('outputText').value = '';
+            document.getElementById('htmlOutput').value = '';
+            
+            // Reset to defaults
+            document.querySelectorAll('.font-option').forEach(opt => opt.classList.remove('selected'));
+            document.querySelector('[data-font="regular"]').classList.add('selected');
+            selectedFont = 'regular';
+            
+            document.getElementById('useColor').checked = false;
+            updatePreview();
+        }
+
+        // Update preview when typing
+        document.getElementById('inputText').addEventListener('input', updatePreview);
+
+        // Initialize the app
+        window.addEventListener('DOMContentLoaded', function() {
+            loadSavedColors();
+            updatePreview();
+        });
+    </script>
+</body>
+</html>
+            
